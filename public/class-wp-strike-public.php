@@ -32,8 +32,7 @@ class Wp_Strike_Public
     {
         $CrawlerDetect = new CrawlerDetect;
 
-        if (!$CrawlerDetect->isCrawler()) {
-
+        if (!$CrawlerDetect->isCrawler() && get_option('wp_strike_enabled', '1') === '1') {
 
             $type = get_option('wp_strike_type', 'recurring');
 

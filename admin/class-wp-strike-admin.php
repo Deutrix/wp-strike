@@ -50,6 +50,7 @@ class Wp_Strike_Admin {
         add_option( 'wp_strike_time_from', '11:52' );
         add_option( 'wp_strike_time_to', '12:07' );
         add_option( 'wp_strike_timezone', 'Europe/Belgrade' );
+        add_option( 'wp_strike_enabled', '1' );
 
         register_setting( 'wp_strike_options_group', 'wp_strike_bg_color' );
         register_setting( 'wp_strike_options_group', 'wp_strike_image' );
@@ -59,5 +60,6 @@ class Wp_Strike_Admin {
         register_setting( 'wp_strike_options_group', 'wp_strike_time_from' );
         register_setting( 'wp_strike_options_group', 'wp_strike_time_to' );
         register_setting( 'wp_strike_options_group', 'wp_strike_timezone' );
+        register_setting( 'wp_strike_options_group', 'wp_strike_enabled' );
     }
 }

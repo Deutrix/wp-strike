@@ -6,6 +6,10 @@
 
         <table class="form-table">
             <tr valign="top">
+                <th scope="row"><?php esc_html_e( 'Uključi', 'wp-strike' ); ?></th>
+                <td><input type="checkbox" name="wp_strike_enabled" value="1" <?php checked( get_option('wp_strike_enabled'), '1' ); ?> /></td>
+            </tr>
+            <tr valign="top">
                 <th scope="row"><?php esc_html_e( 'Boja pozadine', 'wp-strike' ); ?></th>
                 <td><input type="text" name="wp_strike_bg_color" value="<?php echo esc_attr( get_option('wp_strike_bg_color') ); ?>" class="wp-color-picker-field" data-default-color="#ffffff" /></td>
             </tr>
