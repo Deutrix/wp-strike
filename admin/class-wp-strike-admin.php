@@ -43,6 +43,7 @@ class Wp_Strike_Admin {
     }
 
     public function register_settings() {
+        add_option( 'wp_strike_title', '' );
         add_option( 'wp_strike_bg_color', '#ffffff' );
         add_option( 'wp_strike_image', '' );
         add_option( 'wp_strike_text', '' );
@@ -55,6 +56,7 @@ class Wp_Strike_Admin {
         add_option( 'wp_strike_timezone', 'Europe/Belgrade' );
         add_option( 'wp_strike_enabled', '1' );
 
+        register_setting( 'wp_strike_options_group', 'wp_strike_title' );
         register_setting( 'wp_strike_options_group', 'wp_strike_bg_color' );
         register_setting( 'wp_strike_options_group', 'wp_strike_image' );
         register_setting( 'wp_strike_options_group', 'wp_strike_text' );
