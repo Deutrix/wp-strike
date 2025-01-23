@@ -28,6 +28,15 @@ class Wp_Strike_Public
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-strike-public.js', array('jquery'), $this->version, false);
     }
 
+    public function clear_cache() {
+        if (class_exists('\LiteSpeed\Purge')) {
+            \LiteSpeed\Purge::purge_all();
+        }
+        if (function_exists('rocket_clean_domain')) {
+            rocket_clean_domain();
+        }
+    }
+
     public function replace_homepage()
     {
         $CrawlerDetect = new CrawlerDetect;
@@ -44,8 +53,6 @@ class Wp_Strike_Public
             $time_to = get_option('wp_strike_time_to', '23:59');
 
             $show_page = false;
-
-            // var_dump( "Current Time: $current_time, Current Date: $current_date, Time From: $time_from, Time To: $time_to, Type: $type, Timezone: $timezone" );
 
             if ($type === 'recurring') {
                 $recurring = get_option('wp_strike_recurring', 'daily');
@@ -64,9 +71,14 @@ class Wp_Strike_Public
             }
 
             if ($show_page) {
+                $this->clear_cache();
+                set_transient('wp_strike_purged', true, 12 * HOUR_IN_SECONDS);
                 add_filter('template_include', function () {
                     return plugin_dir_path(__FILE__) . 'templates/strike-page.php';
                 });
+            } elseif (!$show_page && get_transient('wp_strike_purged') && $current_time > $time_to) {
+                $this->clear_cache();
+                delete_transient('wp_strike_purged');
             }
         }
     }

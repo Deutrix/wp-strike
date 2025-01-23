@@ -13,8 +13,8 @@
     }
     img {
         max-width: 100%;
+        max-height: 100%;
         height: auto;
-        padding: 10px;
     }
     h1 {
         font-size: 2em;

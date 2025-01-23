@@ -12,6 +12,7 @@ class Wp_Strike_Admin {
         add_action( 'admin_menu', array( $this, 'add_plugin_admin_menu' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
         add_action( 'admin_init', array( $this, 'register_settings' ) );
+        add_action( 'update_option_wp_strike_options_group', array( $this, 'delete_wp_strike_purged_transient' ) );
     }
 
     public function enqueue_styles() {
@@ -65,5 +66,9 @@ class Wp_Strike_Admin {
         register_setting( 'wp_strike_options_group', 'wp_strike_time_to' );
         register_setting( 'wp_strike_options_group', 'wp_strike_timezone' );
         register_setting( 'wp_strike_options_group', 'wp_strike_enabled' );
+    }
+
+    public function delete_wp_strike_purged_transient() {
+        delete_transient('wp_strike_purged');
     }
 }
