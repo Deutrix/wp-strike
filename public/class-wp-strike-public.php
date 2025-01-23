@@ -70,6 +70,7 @@ class Wp_Strike_Public
         if ($show_page) {
             $this->clear_cache();
             set_transient('wp_strike_purged', true, 12 * HOUR_IN_SECONDS);
+            add_filter('nocache_headers', '__return_true');
             add_filter('template_include', function () {
                 return plugin_dir_path(__FILE__) . 'templates/strike-page.php';
             });
