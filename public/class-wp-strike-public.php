@@ -4,7 +4,6 @@ use Jaybizzle\CrawlerDetect\CrawlerDetect;
 
 class Wp_Strike_Public
 {
-
     private $plugin_name;
     private $version;
 
@@ -28,7 +27,8 @@ class Wp_Strike_Public
         wp_enqueue_script($this->plugin_name, plugin_dir_url(__FILE__) . 'js/wp-strike-public.js', array('jquery'), $this->version, false);
     }
 
-    public function clear_cache() {
+    public function clear_cache()
+    {
         if (class_exists('\LiteSpeed\Purge')) {
             \LiteSpeed\Purge::purge_all();
         }
@@ -41,45 +41,41 @@ class Wp_Strike_Public
     {
         $CrawlerDetect = new CrawlerDetect;
 
-        if (!$CrawlerDetect->isCrawler() && get_option('wp_strike_enabled', '1') === '1') {
+        if ($CrawlerDetect->isCrawler() || get_option('wp_strike_enabled', '1') !== '1') {
+            return;
+        }
 
-            $type = get_option('wp_strike_type', 'recurring');
+        $type = get_option('wp_strike_type', 'recurring');
+        $timezone = get_option('wp_strike_timezone', 'UTC');
+        $date = new DateTime('now', new DateTimeZone($timezone));
+        $current_time = $date->format('H:i');
+        $current_date = $date->format('Y-m-d');
+        $time_from = get_option('wp_strike_time_from', '00:00');
+        $time_to = get_option('wp_strike_time_to', '23:59');
 
-            $timezone = get_option('wp_strike_timezone', 'UTC');
-            $date = new DateTime('now', new DateTimeZone($timezone));
-            $current_time = $date->format('H:i');
-            $current_date = $date->format('Y-m-d');
-            $time_from = get_option('wp_strike_time_from', '00:00');
-            $time_to = get_option('wp_strike_time_to', '23:59');
+        $show_page = false;
 
-            $show_page = false;
-
-            if ($type === 'recurring') {
-                $recurring = get_option('wp_strike_recurring', 'daily');
-                if ($recurring === 'daily' || ($recurring === 'friday' && date('N') == 5)) {
-                    if ($current_time >= $time_from && $current_time <= $time_to) {
-                        $show_page = true;
-                    }
-                }
-            } elseif ($type === 'specific') {
-                $specific_date = get_option('wp_strike_specific_date', '');
-                if ($current_date === $specific_date) {
-                    if ($current_time >= $time_from && $current_time <= $time_to) {
-                        $show_page = true;
-                    }
-                }
+        if ($type === 'recurring') {
+            $recurring = get_option('wp_strike_recurring', 'daily');
+            if ($recurring === 'daily' || ($recurring === 'friday' && date('N') == 5)) {
+                $show_page = $current_time >= $time_from && $current_time <= $time_to;
             }
-
-            if ($show_page) {
-                $this->clear_cache();
-                set_transient('wp_strike_purged', true, 12 * HOUR_IN_SECONDS);
-                add_filter('template_include', function () {
-                    return plugin_dir_path(__FILE__) . 'templates/strike-page.php';
-                });
-            } elseif (!$show_page && get_transient('wp_strike_purged') && $current_time > $time_to) {
-                $this->clear_cache();
-                delete_transient('wp_strike_purged');
+        } elseif ($type === 'specific') {
+            $specific_date = get_option('wp_strike_specific_date', '');
+            if ($current_date === $specific_date) {
+                $show_page = $current_time >= $time_from && $current_time <= $time_to;
             }
+        }
+
+        if ($show_page) {
+            $this->clear_cache();
+            set_transient('wp_strike_purged', true, 12 * HOUR_IN_SECONDS);
+            add_filter('template_include', function () {
+                return plugin_dir_path(__FILE__) . 'templates/strike-page.php';
+            });
+        } elseif (get_transient('wp_strike_purged') && $current_time > $time_to) {
+            $this->clear_cache();
+            delete_transient('wp_strike_purged');
         }
     }
 }
