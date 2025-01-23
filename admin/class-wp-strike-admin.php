@@ -32,7 +32,7 @@ class Wp_Strike_Admin {
             'manage_options',
             $this->plugin_name,
             array( $this, 'display_plugin_admin_page' ),
-            'dashicons-admin-generic',
+            'dashicons-groups',
             6
         );
     }
@@ -42,6 +42,15 @@ class Wp_Strike_Admin {
     }
 
     public function register_settings() {
+        add_option( 'wp_strike_bg_color', '#ffffff' );
+        add_option( 'wp_strike_image', '' );
+        add_option( 'wp_strike_type', 'recurring' );
+        add_option( 'wp_strike_recurring', 'daily' );
+        add_option( 'wp_strike_specific_date', '' );
+        add_option( 'wp_strike_time_from', '11:52' );
+        add_option( 'wp_strike_time_to', '12:07' );
+        add_option( 'wp_strike_timezone', 'Europe/Belgrade' );
+
         register_setting( 'wp_strike_options_group', 'wp_strike_bg_color' );
         register_setting( 'wp_strike_options_group', 'wp_strike_image' );
         register_setting( 'wp_strike_options_group', 'wp_strike_type' );
