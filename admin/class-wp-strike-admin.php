@@ -44,6 +44,8 @@ class Wp_Strike_Admin {
     public function register_settings() {
         add_option( 'wp_strike_bg_color', '#ffffff' );
         add_option( 'wp_strike_image', '' );
+        add_option( 'wp_strike_text', '' );
+        add_option( 'wp_strike_text_color', '#000000' );
         add_option( 'wp_strike_type', 'recurring' );
         add_option( 'wp_strike_recurring', 'daily' );
         add_option( 'wp_strike_specific_date', '' );
@@ -54,6 +56,8 @@ class Wp_Strike_Admin {
 
         register_setting( 'wp_strike_options_group', 'wp_strike_bg_color' );
         register_setting( 'wp_strike_options_group', 'wp_strike_image' );
+        register_setting( 'wp_strike_options_group', 'wp_strike_text' );
+        register_setting( 'wp_strike_options_group', 'wp_strike_text_color' );
         register_setting( 'wp_strike_options_group', 'wp_strike_type' );
         register_setting( 'wp_strike_options_group', 'wp_strike_recurring' );
         register_setting( 'wp_strike_options_group', 'wp_strike_specific_date' );

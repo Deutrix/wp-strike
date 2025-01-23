@@ -14,6 +14,14 @@
                 <td><input type="text" name="wp_strike_bg_color" value="<?php echo esc_attr( get_option('wp_strike_bg_color') ); ?>" class="wp-color-picker-field" data-default-color="#ffffff" /></td>
             </tr>
             <tr valign="top">
+                <th scope="row"><?php esc_html_e( 'Tekst', 'wp-strike' ); ?></th>
+                <td><input type="text" name="wp_strike_text" value="<?php echo esc_attr( get_option('wp_strike_text') ); ?>" /></td>
+            </tr>
+            <tr valign="top">
+                <th scope="row"><?php esc_html_e( 'Boja teksta', 'wp-strike' ); ?></th>
+                <td><input type="text" name="wp_strike_text_color" value="<?php echo esc_attr( get_option('wp_strike_text_color') ); ?>" class="wp-color-picker-field" data-default-color="#000000" /></td>
+            </tr>
+            <tr valign="top">
                 <th scope="row"><?php esc_html_e( 'Fotografija', 'wp-strike' ); ?></th>
                 <td>
                     <input type="text" name="wp_strike_image" id="wp_strike_image" value="<?php echo esc_attr( get_option('wp_strike_image') ); ?>" />
