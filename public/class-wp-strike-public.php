@@ -1,103 +1,61 @@
 <?php
 
-/**
- * The public-facing functionality of the plugin.
- *
- * @link       https://deutrix.com
- * @since      1.0.0
- *
- * @package    Wp_Strike
- * @subpackage Wp_Strike/public
- */
-
-/**
- * The public-facing functionality of the plugin.
- *
- * Defines the plugin name, version, and two examples hooks for how to
- * enqueue the public-facing stylesheet and JavaScript.
- *
- * @package    Wp_Strike
- * @subpackage Wp_Strike/public
- * @author     Deutrix <office@deutrix.com>
- */
 class Wp_Strike_Public {
 
-	/**
-	 * The ID of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $plugin_name    The ID of this plugin.
-	 */
-	private $plugin_name;
+    private $plugin_name;
+    private $version;
 
-	/**
-	 * The version of this plugin.
-	 *
-	 * @since    1.0.0
-	 * @access   private
-	 * @var      string    $version    The current version of this plugin.
-	 */
-	private $version;
+    public function __construct( $plugin_name, $version ) {
+        $this->plugin_name = $plugin_name;
+        $this->version = $version;
 
-	/**
-	 * Initialize the class and set its properties.
-	 *
-	 * @since    1.0.0
-	 * @param      string    $plugin_name       The name of the plugin.
-	 * @param      string    $version    The version of this plugin.
-	 */
-	public function __construct( $plugin_name, $version ) {
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_styles' ) );
+        add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+        add_action( 'template_redirect', array( $this, 'replace_homepage' ) );
+    }
 
-		$this->plugin_name = $plugin_name;
-		$this->version = $version;
+    public function enqueue_styles() {
+        wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-strike-public.css', array(), $this->version, 'all' );
+    }
 
-	}
+    public function enqueue_scripts() {
+        wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-strike-public.js', array( 'jquery' ), $this->version, false );
+    }
 
-	/**
-	 * Register the stylesheets for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_styles() {
+    public function replace_homepage() {
+            $type = get_option( 'wp_strike_type', 'recurring' );
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Wp_Strike_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Wp_Strike_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
+            $timezone = get_option( 'wp_strike_timezone', 'UTC' );
+            $date = new DateTime('now', new DateTimeZone($timezone));
+            $current_time = $date->format('H:i');
+            $current_date = $date->format( 'Y-m-d' );
+            $time_from = get_option( 'wp_strike_time_from', '00:00' );
+            $time_to = get_option( 'wp_strike_time_to', '23:59' );
 
-		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'css/wp-strike-public.css', array(), $this->version, 'all' );
+            $show_page = false;
 
-	}
+            // var_dump( "Current Time: $current_time, Current Date: $current_date, Time From: $time_from, Time To: $time_to, Type: $type, Timezone: $timezone" );
 
-	/**
-	 * Register the JavaScript for the public-facing side of the site.
-	 *
-	 * @since    1.0.0
-	 */
-	public function enqueue_scripts() {
+            if ( $type === 'recurring' ) {
+                $recurring = get_option( 'wp_strike_recurring', 'daily' );
+                if ( $recurring === 'daily' || ( $recurring === 'friday' && date( 'N' ) == 5 ) ) {
+                    if ( $current_time >= $time_from && $current_time <= $time_to ) {
+                        $show_page = true;
+                    }
+                }
+            } elseif ( $type === 'specific' ) {
+                $specific_date = get_option( 'wp_strike_specific_date', '' );
+                if ( $current_date === $specific_date ) {
+                    if ( $current_time >= $time_from && $current_time <= $time_to ) {
+                        $show_page = true;
+                    }
+                }
+            }
 
-		/**
-		 * This function is provided for demonstration purposes only.
-		 *
-		 * An instance of this class should be passed to the run() function
-		 * defined in Wp_Strike_Loader as all of the hooks are defined
-		 * in that particular class.
-		 *
-		 * The Wp_Strike_Loader will then create the relationship
-		 * between the defined hooks and the functions defined in this
-		 * class.
-		 */
-
-		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . 'js/wp-strike-public.js', array( 'jquery' ), $this->version, false );
-
-	}
-
+            if ( $show_page ) {
+                add_filter( 'template_include', function() {
+                    return plugin_dir_path( __FILE__ ) . 'templates/strike-page.php';
+                });
+            }
+        }
 }
